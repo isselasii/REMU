@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Service Request - REMU</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="navbar">
+            <div class="logo">REMU</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="browse-services.html">Services</a></li>
+                <li><a href="my-bookings.html">Bookings</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+            <div class="nav-right">
+                <a href="profile.html" class="btn-secondary">Profile</a>
+                <button class="btn-primary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <h1 class="section-title">Post a Service Request</h1>
+        <p style="color: var(--text-light); margin-bottom: 2rem;">Let skilled professionals know what you need. They'll send you quotes!</p>
+
+        <div style="background-color: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <form id="serviceRequestForm" onsubmit="submitRequest(event)">
+                <div class="input-group">
+                    <label for="serviceType">What service do you need?</label>
+                    <select id="serviceType" required onchange="updateDescription()">
+                        <option value="">Select a service...</option>
+                        <option value="electrical">Electrical Work</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="carpentry">Carpentry</option>
+                        <option value="painting">Painting</option>
+                        <option value="hvac">HVAC & Cooling</option>
+                        <option value="cleaning">Cleaning Services</option>
+                        <option value="it">IT & Tech Support</option>
+                        <option value="appliance">Appliance Repair</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="description">Describe the job in detail</label>
+                    <textarea id="description" required placeholder="Tell professionals exactly what you need..." style="
+                        width: 100%;
+                        padding: 0.75rem;
+                        border: 1px solid var(--border-color);
+                        border-radius: 0.5rem;
+                        font-family: inherit;
+                        resize: vertical;
+                        min-height: 120px;
+                    "></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="location">Where is the job located?</label>
+                    <input type="text" id="location" required placeholder="Enter your address or area">
+                </div>
+
+                <div class="input-group">
+                    <label for="preferredDate">When do you need it done?</label>
+                    <input type="date" id="preferredDate" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="budget">What's your budget range? (GH₵)</label>
+                    <input type="number" id="budget" placeholder="e.g., 200" step="10">
+                </div>
+
+                <div class="input-group">
+                    <label for="phone">Your phone number</label>
+                    <input type="tel" id="phone" required placeholder="+233 XX XXX XXXX">
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn-submit" style="flex: 1;">Post Request</button>
+                    <a href="browse-services.html" class="btn-secondary" style="flex: 1; text-align: center; text-decoration: none; padding: 1rem;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        function updateDescription() {
+            const serviceType = document.getElementById('serviceType').value;
+            const descriptions = {
+                electrical: 'Describe the electrical issue (e.g., outlets not working, wiring needed, light installation)',
+                plumbing: 'Describe the plumbing issue (e.g., leaky faucet, clogged drain, pipe repair)',
+                carpentry: 'Describe the carpentry work needed (e.g., furniture repair, door installation, shelving)',
+                painting: 'Describe the painting job (e.g., interior/exterior, area size, color preferences)',
+                hvac: 'Describe the cooling/heating issue (e.g., AC repair, installation, maintenance)',
+                cleaning: 'Describe the cleaning service needed (e.g., house cleaning, deep clean, carpet cleaning)',
+                it: 'Describe the tech support needed (e.g., computer repair, network setup, software issues)',
+                appliance: 'Describe the appliance repair (e.g., washer, fridge, oven)'
+            };
+            
+            const textarea = document.getElementById('description');
+            if (descriptions[serviceType]) {
+                textarea.placeholder = descriptions[serviceType];
+            }
+        }
+
+        function submitRequest(event) {
+            event.preventDefault();
+            
+            const formData = {
+                serviceType: document.getElementById('serviceType').value,
+                description: document.getElementById('description').value,
+                location: document.getElementById('location').value,
+                preferredDate: document.getElementById('preferredDate').value,
+                budget: document.getElementById('budget').value,
+                phone: document.getElementById('phone').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('Request submitted:', formData);
+            alert('Service request posted! Professionals will start sending you quotes shortly.');
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

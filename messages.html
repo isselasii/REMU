@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - REMU</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="navbar">
+            <div class="logo">REMU</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="browse-services.html">Services</a></li>
+                <li><a href="my-bookings.html">Bookings</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+            <div class="nav-right">
+                <a href="profile.html" class="btn-secondary">Profile</a>
+                <button class="btn-primary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="messages-container">
+        <!-- CONVERSATIONS LIST -->
+        <div class="conversations-list">
+            <div style="padding: 1rem;">
+                <h3 style="margin: 0 0 1rem 0;">Messages</h3>
+                <input type="text" placeholder="Search conversations..." style="
+                    width: 100%;
+                    padding: 0.75rem;
+                    border: 1px solid var(--border-color);
+                    border-radius: 0.5rem;
+                    margin-bottom: 1rem;
+                ">
+            </div>
+            <div id="conversationsList">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- CHAT WINDOW -->
+        <div class="chat-window" id="chatWindow">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-light);">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">💬</div>
+                <p>Select a conversation to start messaging</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        const conversations = [
+            {
+                id: 1,
+                name: 'John Smith',
+                avatar: 'JS',
+                lastMessage: 'I can start tomorrow',
+                timestamp: '2 hours ago',
+                unread: 2,
+                messages: [
+                    { sender: 'you', text: 'Can you help with my electrical issue?' },
+                    { sender: 'them', text: 'Yes, of course! What is the problem?' },
+                    { sender: 'you', text: 'My kitchen outlet is not working' },
+                    { sender: 'them', text: 'I can start tomorrow' }
+                ]
+            },
+            {
+                id: 2,
+                name: 'Mary Johnson',
+                avatar: 'MJ',
+                lastMessage: 'Thank you for your work',
+                timestamp: '1 day ago',
+                unread: 0,
+                messages: [
+                    { sender: 'you', text: 'When can you start?' },
+                    { sender: 'them', text: 'Next Monday would work' }
+                ]
+            },
+            {
+                id: 3,
+                name: 'David Brown',
+                avatar: 'DB',
+                lastMessage: 'What time works best for you?',
+                timestamp: '3 days ago',
+                unread: 0,
+                messages: []
+            }
+        ];
+
+        let selectedConversation = null;
+
+        function renderConversations() {
+            const list = document.getElementById('conversationsList');
+            list.innerHTML = conversations.map(conv => `
+                <div class="conversation-item" onclick="selectConversation(${conv.id})" style="${
+                    conv.unread ? 'background-color: #f0f9ff;' : ''
+                }">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                        <div style="
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: 700;
+                            flex-shrink: 0;
+                        ">${conv.avatar}</div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                <strong style="${
+                                    conv.unread ? 'color: var(--primary-color);' : ''
+                                }">${conv.name}</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-light);">${conv.timestamp}</span>
+                            </div>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${conv.lastMessage}</p>
+                        </div>
+                        ${conv.unread ? `<span style="
+                            background-color: var(--primary-color);
+                            color: white;
+                            border-radius: 50%;
+                            width: 20px;
+                            height: 20px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 0.8rem;
+                            font-weight: 700;
+                        ">${conv.unread}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectConversation(id) {
+            selectedConversation = conversations.find(c => c.id === id);
+            renderChatWindow();
+        }
+
+        function renderChatWindow() {
+            if (!selectedConversation) return;
+
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.innerHTML = `
+                <div class="chat-header" style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-weight: 700;
+                    ">${selectedConversation.avatar}</div>
+                    <div>
+                        <div style="font-weight: 600;">${selectedConversation.name}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-light);">Active now</div>
+                    </div>
+                </div>
+
+                <div class="messages">
+                    ${selectedConversation.messages.map(msg => `
+                        <div class="message ${msg.sender === 'you' ? 'sent' : 'received'}">
+                            <div class="message-bubble">${msg.text}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="Type your message...">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            `;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            if (input.value.trim() === '') return;
+
+            selectedConversation.messages.push({
+                sender: 'you',
+                text: input.value
+            });
+            input.value = '';
+            renderChatWindow();
+        }
+
+        window.addEventListener('load', () => {
+            renderConversations();
+        });
+    </script>
+</body>
+</html>

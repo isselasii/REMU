@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Services - REMU</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="navbar">
+            <div class="logo">REMU</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="browse-services.html">Services</a></li>
+                <li><a href="my-bookings.html">Bookings</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+            <div class="nav-right">
+                <a href="profile.html" class="btn-secondary">Profile</a>
+                <button class="btn-primary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <h1 class="section-title">Find Skilled Professionals</h1>
+
+        <!-- FILTERS -->
+        <div class="filters">
+            <div class="filter-group">
+                <div>
+                    <label for="serviceCategory">Service Category</label>
+                    <select id="serviceCategory" onchange="filterServices()">
+                        <option value="">All Categories</option>
+                        <option value="electrical">Electrical Work</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="carpentry">Carpentry</option>
+                        <option value="painting">Painting</option>
+                        <option value="hvac">HVAC & Cooling</option>
+                        <option value="cleaning">Cleaning Services</option>
+                        <option value="it">IT & Tech Support</option>
+                        <option value="appliance">Appliance Repair</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="priceRange">Max Price (GH₵)</label>
+                    <input type="number" id="priceRange" placeholder="500" onchange="filterServices()">
+                </div>
+                <div>
+                    <label for="location">Location</label>
+                    <input type="text" id="location" placeholder="e.g., Accra, Kumasi" onchange="filterServices()">
+                </div>
+                <div>
+                    <label for="minRating">Minimum Rating</label>
+                    <select id="minRating" onchange="filterServices()">
+                        <option value="0">All Ratings</option>
+                        <option value="3">3+ Stars</option>
+                        <option value="4">4+ Stars</option>
+                        <option value="4.5">4.5+ Stars</option>
+                        <option value="5">5 Stars</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SERVICES GRID -->
+        <div class="services-grid" id="servicesGrid">
+            <!-- Populated by JavaScript -->
+        </div>
+
+        <div style="text-align: center; padding: 2rem;" id="noResults" class="hidden">
+            <p style="font-size: 1.1rem; color: var(--text-light);">No services found. Try adjusting your filters.</p>
+        </div>
+    </div>
+
+    <!-- SERVICE DETAIL MODAL -->
+    <div id="serviceModal" class="hidden" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    ">
+        <div style="
+            background-color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        ">
+            <button onclick="closeServiceModal()" style="
+                float: right;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+            ">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/services.js"></script>
+</body>
+</html>

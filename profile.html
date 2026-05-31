@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - REMU</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="navbar">
+            <div class="logo">REMU</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="browse-services.html">Services</a></li>
+                <li><a href="my-bookings.html">Bookings</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+            <div class="nav-right">
+                <a href="profile.html" class="btn-secondary">Profile</a>
+                <button class="btn-primary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">U</div>
+            <h1 id="profileName">User Name</h1>
+            <p id="profileRole">Customer</p>
+        </div>
+
+        <div class="profile-body">
+            <!-- BASIC INFO -->
+            <div class="profile-section">
+                <h2>Personal Information</h2>
+                <div class="profile-row">
+                    <div class="profile-field">
+                        <label>Email Address</label>
+                        <div class="value" id="profileEmail">user@example.com</div>
+                    </div>
+                    <div class="profile-field">
+                        <label>Phone Number</label>
+                        <div class="value" id="profilePhone">+233 XX XXX XXXX</div>
+                    </div>
+                </div>
+                <div class="profile-row">
+                    <div class="profile-field">
+                        <label>Location</label>
+                        <div class="value" id="profileLocation">Accra, Ghana</div>
+                    </div>
+                    <div class="profile-field">
+                        <label>Member Since</label>
+                        <div class="value" id="profileJoined">January 2024</div>
+                    </div>
+                </div>
+                <button class="btn-primary" style="margin-top: 1rem;" onclick="editProfile()">Edit Profile</button>
+            </div>
+
+            <!-- PROVIDER SPECIFIC INFO -->
+            <div class="profile-section" id="providerSection" style="display: none;">
+                <h2>Professional Information</h2>
+                <div class="profile-row">
+                    <div class="profile-field">
+                        <label>Service Category</label>
+                        <div class="value" id="profileSkill">Electrical Work</div>
+                    </div>
+                    <div class="profile-field">
+                        <label>Years of Experience</label>
+                        <div class="value" id="profileExp">5 years</div>
+                    </div>
+                </div>
+                <div class="profile-field">
+                    <label>About Me</label>
+                    <div class="value" id="profileBio">Professional electrician with extensive experience...</div>
+                </div>
+            </div>
+
+            <!-- RATINGS & REVIEWS -->
+            <div class="profile-section">
+                <h2>Ratings & Reviews</h2>
+                <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; font-weight: 700; color: var(--primary-color);">4.8</div>
+                        <div style="color: #fbbf24; font-size: 1.5rem;">★★★★★</div>
+                        <div style="color: var(--text-light); font-size: 0.9rem;">Based on 24 reviews</div>
+                    </div>
+                </div>
+                <div id="reviewsList" style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                    <!-- Reviews will be populated here -->
+                </div>
+            </div>
+
+            <!-- VERIFICATION -->
+            <div class="profile-section">
+                <h2>Verification Status</h2>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div style="padding: 1rem; background-color: #dcfce7; border-radius: 0.5rem; border-left: 4px solid var(--success-color); flex: 1; min-width: 200px;">
+                        <div style="font-weight: 600; color: var(--success-color);">✓ Email Verified</div>
+                        <div style="font-size: 0.9rem; color: var(--text-light);">Verified on Jan 15, 2024</div>
+                    </div>
+                    <div style="padding: 1rem; background-color: #fef2f2; border-radius: 0.5rem; border-left: 4px solid var(--danger-color); flex: 1; min-width: 200px;">
+                        <div style="font-weight: 600; color: var(--danger-color);">✗ Phone Not Verified</div>
+                        <div style="font-size: 0.9rem; color: var(--text-light);"><a href="#" style="color: var(--danger-color);">Verify now</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Load profile data from localStorage
+        window.addEventListener('load', () => {
+            const userData = JSON.parse(localStorage.getItem('currentUser')) || {};
+            document.getElementById('profileName').textContent = userData.name || 'User';
+            document.getElementById('profileEmail').textContent = userData.email || 'N/A';
+            document.getElementById('profilePhone').textContent = userData.phone || 'N/A';
+            document.getElementById('profileAvatar').textContent = (userData.name || 'U').charAt(0).toUpperCase();
+            
+            if (userData.role === 'provider') {
+                document.getElementById('providerSection').style.display = 'block';
+                document.getElementById('profileSkill').textContent = userData.skill || 'N/A';
+                document.getElementById('profileExp').textContent = (userData.experience || 0) + ' years';
+            }
+        });
+
+        function editProfile() {
+            alert('Edit profile functionality coming soon!');
+        }
+    </script>
+</body>
+</html>

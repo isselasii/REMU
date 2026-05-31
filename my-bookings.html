@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - REMU</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="navbar">
+            <div class="logo">REMU</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="browse-services.html">Services</a></li>
+                <li><a href="my-bookings.html">Bookings</a></li>
+                <li><a href="messages.html">Messages</a></li>
+            </ul>
+            <div class="nav-right">
+                <a href="profile.html" class="btn-secondary">Profile</a>
+                <button class="btn-primary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <h1 class="section-title">My Bookings</h1>
+
+        <!-- BOOKING FILTERS -->
+        <div class="filters">
+            <div class="filter-group">
+                <div>
+                    <label for="bookingStatus">Status</label>
+                    <select id="bookingStatus" onchange="filterBookings()">
+                        <option value="">All Bookings</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOOKINGS LIST -->
+        <div id="bookingsList">
+            <!-- Populated by JavaScript -->
+        </div>
+
+        <div style="text-align: center; padding: 2rem;" id="noBookings" class="hidden">
+            <p style="font-size: 1.1rem; color: var(--text-light); margin-bottom: 1rem;">No bookings found</p>
+            <a href="browse-services.html" class="btn-primary" style="display: inline-block; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 0.5rem;">Browse Services</a>
+        </div>
+    </div>
+
+    <!-- BOOKING DETAIL MODAL -->
+    <div id="bookingModal" class="hidden" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    ">
+        <div style="
+            background-color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+        ">
+            <button onclick="closeBookingModal()" style="
+                float: right;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+            ">×</button>
+            <div id="bookingModalContent"></div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        const bookings = [
+            {
+                id: 1,
+                provider: 'John Smith',
+                service: 'Electrical Repair',
+                date: '2024-06-15',
+                time: '10:00 AM',
+                status: 'confirmed',
+                price: 250,
+                location: 'Accra',
+                avatar: 'JS'
+            },
+            {
+                id: 2,
+                provider: 'Mary Johnson',
+                service: 'Plumbing Work',
+                date: '2024-06-20',
+                time: '2:00 PM',
+                status: 'pending',
+                price: 180,
+                location: 'Tema',
+                avatar: 'MJ'
+            },
+            {
+                id: 3,
+                provider: 'David Brown',
+                service: 'Carpentry',
+                date: '2024-05-10',
+                time: '9:00 AM',
+                status: 'completed',
+                price: 420,
+                location: 'Kumasi',
+                avatar: 'DB'
+            }
+        ];
+
+        function renderBookings(filter = '') {
+            const bookingsList = document.getElementById('bookingsList');
+            const noBookings = document.getElementById('noBookings');
+            
+            let filtered = filter ? bookings.filter(b => b.status === filter) : bookings;
+            
+            if (filtered.length === 0) {
+                bookingsList.innerHTML = '';
+                noBookings.classList.remove('hidden');
+                return;
+            }
+            
+            noBookings.classList.add('hidden');
+            bookingsList.innerHTML = filtered.map(booking => `
+                <div style="
+                    background-color: white;
+                    padding: 1.5rem;
+                    border-radius: 1rem;
+                    margin-bottom: 1.5rem;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                ">
+                    <div style="display: flex; gap: 1rem; flex: 1;">
+                        <div style="
+                            width: 50px;
+                            height: 50px;
+                            border-radius: 50%;
+                            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: 700;
+                        ">${booking.avatar}</div>
+                        <div>
+                            <h3 style="margin: 0 0 0.25rem 0;">${booking.service}</h3>
+                            <p style="margin: 0; color: var(--text-light); font-size: 0.9rem;">${booking.provider} • ${booking.date} at ${booking.time}</p>
+                            <p style="margin: 0.5rem 0 0 0; color: var(--text-light); font-size: 0.9rem;">${booking.location}</p>
+                        </div>
+                    </div>
+                    <div style="text-align: right; display: flex; gap: 1rem; align-items: center;">
+                        <div>
+                            <div style="font-size: 1.3rem; font-weight: 700; color: var(--primary-color);">GH₵ ${booking.price}</div>
+                            <span style="
+                                display: inline-block;
+                                padding: 0.25rem 0.75rem;
+                                border-radius: 0.25rem;
+                                font-size: 0.8rem;
+                                font-weight: 600;
+                                background-color: ${
+                                    booking.status === 'confirmed' ? '#dcfce7' : 
+                                    booking.status === 'pending' ? '#fef3c7' : 
+                                    booking.status === 'completed' ? '#d1fae5' : '#fee2e2'
+                                };
+                                color: ${
+                                    booking.status === 'confirmed' ? var(--success-color) : 
+                                    booking.status === 'pending' ? var(--warning-color) : 
+                                    booking.status === 'completed' ? var(--success-color) : var(--danger-color)
+                                };
+                            ">${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</span>
+                        </div>
+                        <button class="btn-primary" onclick="viewBookingDetail(${booking.id})" style="padding: 0.75rem 1.5rem;">View</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterBookings() {
+            const status = document.getElementById('bookingStatus').value;
+            renderBookings(status);
+        }
+
+        function viewBookingDetail(id) {
+            const booking = bookings.find(b => b.id === id);
+            if (!booking) return;
+            
+            document.getElementById('bookingModalContent').innerHTML = `
+                <h2>${booking.service}</h2>
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="
+                            width: 60px;
+                            height: 60px;
+                            border-radius: 50%;
+                            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: 700;
+                            font-size: 1.2rem;
+                        ">${booking.avatar}</div>
+                        <div>
+                            <h3 style="margin: 0;">${booking.provider}</h3>
+                            <p style="margin: 0; color: var(--text-light);">⭐ 4.8 (24 reviews)</p>
+                        </div>
+                    </div>
+                    <div style="background-color: var(--light-bg); padding: 1rem; border-radius: 0.5rem;">
+                        <p><strong>Date:</strong> ${booking.date}</p>
+                        <p><strong>Time:</strong> ${booking.time}</p>
+                        <p><strong>Location:</strong> ${booking.location}</p>
+                        <p><strong>Price:</strong> GH₵ ${booking.price}</p>
+                        <p><strong>Status:</strong> <span style="text-transform: capitalize;">${booking.status}</span></p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn-primary" style="flex: 1;">Contact Provider</button>
+                    <button class="btn-secondary" onclick="closeBookingModal()" style="flex: 1;">Close</button>
+                </div>
+            `;
+            document.getElementById('bookingModal').classList.remove('hidden');
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.add('hidden');
+        }
+
+        window.addEventListener('load', () => {
+            renderBookings();
+        });
+    </script>
+</body>
+</html>
