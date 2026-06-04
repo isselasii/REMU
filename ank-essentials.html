@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANK ESSENTIALS - Corporate & Educational Supplies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .sidebar {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #d4af37 #f0f0f0;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 3px;
+        }
+
+        .product-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .category-btn {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .category-btn.active {
+            background-color: #1e2d5c;
+            color: #d4af37;
+            border-left-color: #d4af37;
+        }
+
+        .category-btn:hover:not(.active) {
+            background-color: #f0f0f0;
+            padding-left: 14px;
+        }
+
+        .slideout-cart {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.15);
+            transition: right 0.3s ease;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .slideout-cart.open {
+            right: 0;
+        }
+
+        .slideout-cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 40;
+        }
+
+        .slideout-cart-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .floating-cart-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e2d5c 0%, #2d3e7a 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(30, 45, 92, 0.4);
+            transition: all 0.3s ease;
+            z-index: 35;
+        }
+
+        .floating-cart-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(30, 45, 92, 0.6);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc2626;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+        }
+
+        .quantity-controls button {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .quantity-controls button:hover {
+            background: #d4af37;
+        }
+
+        .customized-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: linear-gradient(135deg, #d4af37 0%, #c9a92c 100%);
+            color: #1e2d5c;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .deposit-badge {
+            background: #ef4444;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 4px;
+            display: inline-block;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slideout-cart {
+                width: 100%;
+                right: -100%;
+            }
+
+            .floating-cart-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 56px;
+                height: 56px;
+            }
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #25D366;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            transition: all 0.3s ease;
+            z-index: 35;
+            text-decoration: none;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .whatsapp-float {
+                bottom: 100px;
+                left: 20px;
+            }
+        }
+
+        .text-gold {
+            color: #d4af37;
+        }
+
+        .bg-navy {
+            background-color: #1e2d5c;
+        }
+
+        .bg-navy-dark {
+            background-color: #0f1a3f;
+        }
+
+        .border-gold {
+            border-color: #d4af37;
+        }
+
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+
+        .price-highlight {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e2d5c;
+        }
+
+        .free-delivery-badge {
+            background: #10b981;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .paid-delivery-badge {
+            background: #f59e0b;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .empty-cart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            color: #9ca3af;
+        }
+
+        .empty-cart-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 scroll-smooth">
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/233257946199?text=Hello%20ANK%20ESSENTIALS,%20I%20need%20assistance" target="_blank" class="whatsapp-float" title="Chat with us on WhatsApp">
+        <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
+
+    <!-- Floating Cart Button -->
+    <div class="floating-cart-btn" id="floatingCartBtn">
+        <i class="fas fa-shopping-cart text-xl"></i>
+        <div class="cart-badge" id="cartBadge">0</div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div class="slideout-cart-overlay" id="cartOverlay"></div>
+
+    <!-- Slideout Shopping Cart -->
+    <div class="slideout-cart" id="slideoutCart">
+        <div class="bg-navy text-white p-6 border-b">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold">Shopping Cart</h2>
+                <button id="closeCartBtn" class="text-white hover:text-gold transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4" id="cartItems">
+            <div class="empty-cart">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <p class="text-center">Your cart is empty</p>
+                <p class="text-sm text-gray-400 text-center mt-2">Add items to get started</p>
+            </div>
+        </div>
+
+        <div class="bg-gray-100 border-t p-4 space-y-3">
+            <div class="flex justify-between text-sm">
+                <span>Subtotal:</span>
+                <span class="font-semibold text-gray-700" id="subtotalDisplay">GHS 0.00</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span>Delivery Fee:</span>
+                <span class="font-semibold text-gray-700" id="deliveryDisplay">
+                    <span class="paid-delivery-badge">GHS 25.00</span>
+                </span>
+            </div>
+            <div class="bg-white p-3 rounded border border-gold">
+                <div class="flex justify-between text-lg">
+                    <span class="font-bold text-navy">Total:</span>
+                    <span class="font-bold text-gold text-xl" id="totalDisplay">GHS 0.00</span>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">📦 24-hour turnaround • Payment on Delivery</p>
+            </div>
+
+            <div class="space-y-2 pt-2">
+                <button id="clearCartBtn" class="w-full bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400 transition font-semibold text-sm">
+                    Clear Cart
+                </button>
+                <button id="whatsappCheckoutBtn" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition font-semibold flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp"></i> Send Order via WhatsApp
+                </button>
+                <button id="smsCheckoutBtn" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition font-semibold flex items-center justify-center gap-2">
+                    <i class="fas fa-sms"></i> Send via SMS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Header -->
+    <header class="sticky-header bg-white">
+        <div class="bg-navy text-white text-center py-2 text-xs">
+            <span class="text-gold font-semibold">🎯 FREE DELIVERY</span> for orders of 3+ items (Lashibi, Accra)
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between gap-4 mb-4">
+                <!-- Logo Section -->
+                <div class="flex-shrink-0">
+                    <h1 class="text-2xl md:text-3xl font-bold text-navy">
+                        <span class="text-gold">ANK</span> ESSENTIALS
+                    </h1>
+                    <p class="text-xs text-gray-600 leading-tight">Corporate • Educational • Institutional</p>
+                </div>
+
+                <!-- Contact Info (Desktop Only) -->
+                <div class="hidden md:flex flex-col gap-1 text-right">
+                    <a href="tel:0257946199" class="text-sm text-navy hover:text-gold transition font-semibold">
+                        📞 0257946199
+                    </a>
+                    <a href="mailto:ankessential@gmail.com" class="text-xs text-gray-600 hover:text-gold transition">
+                        ✉️ ankessential@gmail.com
+                    </a>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search by product name or code..." 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+                >
+                <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+
+            <!-- Category Sidebar -->
+            <aside class="md:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm p-4 sticky top-32 sidebar">
+                    <h3 class="text-lg font-bold text-navy mb-4 flex items-center gap-2">
+                        <i class="fas fa-list text-gold"></i> Categories
+                    </h3>
+                    <div class="space-y-2" id="categoryList">
+                        <!-- Categories will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Contact Card (Mobile) -->
+                <div class="md:hidden bg-navy text-white rounded-lg p-4 mt-4">
+                    <h4 class="font-bold mb-3 text-gold">Contact Us</h4>
+                    <div class="space-y-2 text-sm">
+                        <a href="tel:0257946199" class="flex items-center gap-2 hover:text-gold transition">
+                            <i class="fas fa-phone"></i> 0257946199
+                        </a>
+                        <a href="https://wa.me/233257946199" target="_blank" class="flex items-center gap-2 hover:text-gold transition">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </a>
+                        <a href="mailto:ankessential@gmail.com" class="flex items-center gap-2 hover:text-gold transition">
+                            <i class="fas fa-envelope"></i> Email
+                        </a>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Products Grid -->
+            <section class="md:col-span-4">
+                <div class="mb-4 flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-navy" id="currentCategoryTitle">All Products</h2>
+                    <span class="text-sm text-gray-600" id="productCount">Loading...</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="productGrid">
+                    <!-- Products will be populated by JS -->
+                </div>
+
+                <div id="noProductsMessage" class="hidden col-span-full text-center py-12">
+                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500 text-lg">No products found. Try adjusting your search or filters.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Customer Details & Checkout Section -->
+    <section class="bg-gray-100 py-12 mt-12">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="bg-white rounded-lg shadow-md p-8">
+                <h2 class="text-2xl font-bold text-navy mb-2">
+                    <i class="fas fa-user-circle text-gold mr-2"></i> Delivery Information
+                </h2>
+                <p class="text-gray-600 text-sm mb-6">Enter your details for order delivery</p>
+
+                <form id="customerDetailsForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                            <input 
+                                type="text" 
+                                id="customerName" 
+                                placeholder="Enter your full name" 
+                                required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+                            <input 
+                                type="tel" 
+                                id="customerPhone" 
+                                placeholder="0257946199" 
+                                required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Email (Optional)</label>
+                        <input 
+                            type="email" 
+                            id="customerEmail" 
+                            placeholder="your.email@example.com"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Delivery Location *</label>
+                        <textarea 
+                            id="customerLocation" 
+                            placeholder="Enter your delivery address (e.g., Office/Home address, Landmark, etc.)" 
+                            required
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+                        ></textarea>
+                    </div>
+
+                    <div class="bg-navy bg-opacity-10 border border-gold rounded-lg p-4">
+                        <p class="text-sm text-gray-700">
+                            <span class="font-bold text-gold">📋 Standard Delivery Terms:</span><br>
+                            ✓ 24-hour turnaround time<br>
+                            ✓ Payment options: MoMo / Cash on Delivery<br>
+                            ✓ FREE delivery for Lashibi area (3+ items)
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Information Section -->
+    <section class="bg-navy text-white py-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gold mb-8 text-center">Contact ANK ESSENTIALS</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <!-- Phone -->
+                <div class="bg-white bg-opacity-10 rounded-lg p-6 backdrop-blur-sm hover:bg-opacity-20 transition">
+                    <div class="text-gold text-3xl mb-3">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Customer Service</h3>
+                    <p class="text-sm text-gray-200 mb-3">General inquiries & support</p>
+                    <a href="tel:0257946199" class="text-gold hover:text-white transition font-semibold">
+                        📞 0257946199
+                    </a>
+                </div>
+
+                <!-- WhatsApp & SMS -->
+                <div class="bg-white bg-opacity-10 rounded-lg p-6 backdrop-blur-sm hover:bg-opacity-20 transition">
+                    <div class="text-gold text-3xl mb-3">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Order Submission</h3>
+                    <p class="text-sm text-gray-200 mb-3">SMS / WhatsApp orders</p>
+                    <a href="https://wa.me/233257946799" target="_blank" class="text-gold hover:text-white transition font-semibold">
+                        💬 0257946799
+                    </a>
+                </div>
+
+                <!-- Email -->
+                <div class="bg-white bg-opacity-10 rounded-lg p-6 backdrop-blur-sm hover:bg-opacity-20 transition">
+                    <div class="text-gold text-3xl mb-3">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Email Inquiries</h3>
+                    <p class="text-sm text-gray-200 mb-3">Write us anytime</p>
+                    <a href="mailto:ankessential@gmail.com" class="text-gold hover:text-white transition font-semibold">
+                        ✉️ ankessential@gmail.com
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white bg-opacity-10 rounded-lg p-6 backdrop-blur-sm">
+                <h3 class="text-lg font-bold text-gold mb-3">📍 Our Location</h3>
+                <p class="text-gray-200">
+                    <strong>Lashibi, Accra – Ghana</strong><br>
+                    <span class="text-sm">Your Trusted Partner for Corporate, Educational & Institutional Supplies</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-navy-dark text-gray-300 py-8 border-t border-gold">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div>
+                    <h4 class="font-bold text-gold mb-3">ANK ESSENTIALS</h4>
+                    <p class="text-sm">Your Trusted Partner for Corporate, Educational & Institutional Supplies</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gold mb-3">Quick Links</h4>
+                    <ul class="text-sm space-y-1">
+                        <li><a href="#" onclick="scrollToSection('categoryList')" class="hover:text-gold transition">Browse Products</a></li>
+                        <li><a href="#customerDetailsForm" class="hover:text-gold transition">Place Order</a></li>
+                        <li><a href="https://wa.me/233257946799" target="_blank" class="hover:text-gold transition">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gold mb-3">Business Hours</h4>
+                    <p class="text-sm">Monday - Friday: 9:00 AM - 5:00 PM<br>Saturday: 10:00 AM - 3:00 PM<br>Sunday: Closed</p>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-600 pt-6 text-center text-sm">
+                <p>&copy; 2024 ANK ESSENTIALS. All rights reserved.</p>
+                <p class="text-xs text-gray-400 mt-2">Built with excellence for your business needs</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="ank-essentials.js"></script>
+</body>
+</html>
